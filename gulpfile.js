@@ -17,11 +17,7 @@ const path = {
     dest: 'dist'
   },
   css: {
-    src: 'src/**/*.css',
-    dest: 'dist'
-  },
-  less: {
-    src: 'src/**/*.less',
+    src: 'src/**/*.{css,less}',
     dest: 'dist'
   },
   js: {
@@ -35,7 +31,7 @@ const path = {
 }
 
 // 处理 html
-const html_handle = () => {
+const html = () => {
   /*一个*表示所有文件，两个*表示所有目录*/
   return gulp.src(path.html.src) //打开读取文件
     .pipe(fileinclude({
@@ -58,17 +54,8 @@ const html_handle = () => {
 }
 
 // 处理 css
-const css_handle = () => {
+const css = () => {
   return gulp.src(path.css.src)
-    .pipe(autoprefixer())
-    .pipe(cleanCss())
-    .pipe(gulp.dest(path.css.dest))
-  // .pipe(connect.reload())
-}
-
-// 处理 less
-const less_handle = () => {
-  return gulp.src(path.less.src)
     .pipe(less())
     .pipe(autoprefixer())
     .pipe(cleanCss())
@@ -77,7 +64,7 @@ const less_handle = () => {
 }
 
 // 处理 js
-const js_handle = () => {
+const js = () => {
   gulp.src(path.js.src)
     .pipe(babel({
       presets: ['@babel/env'] //es6转es5
@@ -88,7 +75,7 @@ const js_handle = () => {
 }
 
 // 处理 image
-const image_handle = () => {
+const image = () => {
   gulp.src(path.image.src)
     .pipe(imagemin({
       optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
@@ -117,21 +104,19 @@ const server = () => {
 
 //监听文件，文件改变执行对应的任务
 const watch = () => {
-  gulp.watch(path.html.src, html_handle)
-  gulp.watch(path.css.src, css_handle)
-  gulp.watch(path.less.src, less_handle)
-  gulp.watch(path.js.src, js_handle)
+  gulp.watch(path.html.src, html)
+  gulp.watch(path.css.src, css)
+  gulp.watch(path.js.src, js)
 }
 
 module.exports = {
-  html_handle,
-  js_handle,
-  less_handle,
-  css_handle,
-  image_handle,
+  html,
+  js,
+  css,
+  image,
   watch,
   clear,
   server
 }
 
-module.exports.default = gulp.series(gulp.parallel(html_handle, js_handle, css_handle, less_handle, image_handle, watch, server))
+module.exports.default = gulp.series(gulp.parallel(html, js, css, image, watch, server))
