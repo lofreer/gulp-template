@@ -1,5 +1,7 @@
 const gulp = require('gulp')
 const cleanCss = require('gulp-clean-css') //引入css压缩模块
+const postcss = require("gulp-postcss")
+const pxtoviewport = require('postcss-px-to-viewport');
 const less = require('gulp-less') // 引入less css解析器
 const htmlmin = require('gulp-htmlmin') //压缩 html
 const fileinclude = require('gulp-file-include') // 模块化
@@ -50,17 +52,22 @@ const html = () => {
       minifyCSS: true //压缩页面CSS
     })) //管道流操作，压缩文件
     .pipe(gulp.dest(path.html.dest)) //指定压缩文件放置的目录
-  // .pipe(connect.reload())
+    .pipe(connect.reload())
 }
 
 // 处理 css
 const css = () => {
+  const processors = [pxtoviewport({
+    viewportWidth: 375,
+    viewportUnit: 'vw'
+  })]
   return gulp.src(path.css.src)
     .pipe(less())
+    .pipe(postcss(processors))
     .pipe(autoprefixer())
     .pipe(cleanCss())
     .pipe(gulp.dest(path.css.dest))
-  // .pipe(connect.reload())
+    .pipe(connect.reload())
 }
 
 // 处理 js
@@ -71,7 +78,7 @@ const js = () => {
     }))
     .pipe(uglify()) //执行压缩
     .pipe(gulp.dest(path.js.dest))
-  // .pipe(connect.reload())
+    .pipe(connect.reload())
 }
 
 // 处理 image
@@ -84,7 +91,7 @@ const image = () => {
       multipass: true //类型：Boolean 默认：false 多次优化svg直到完全优化
     })) //执行压缩
     .pipe(gulp.dest(path.image.dest))
-  // .pipe(connect.reload())
+    .pipe(connect.reload())
 }
 
 // 清空文件夹
